@@ -1,0 +1,34 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "metagenomic-metabolic-profiling"
+version = "0.1.0"
+description = "Metagenomic metabolic profiling workflows for contig annotation and pathway-level analysis."
+readme = "README.md"
+requires-python = ">=3.11"
+license = { file = "LICENSE" }
+authors = [
+  { name = "Clay Abraham" }
+]
+dependencies = [
+  "pandas",
+  "PyYAML"
+]
+keywords = ["metagenomics", "metabolic profiling", "KEGG", "KOfamScan", "Prodigal"]
+
+[project.optional-dependencies]
+analysis = [
+  "openpyxl",
+  "matplotlib",
+  "seaborn",
+  "scipy",
+  "scikit-learn"
+]
+
+[project.scripts]
+metabolic-pipeline = "metabolic_pipeline.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["metabolic_pipeline*"]
