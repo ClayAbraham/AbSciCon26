@@ -1,0 +1,21 @@
+[
+  {
+    "pathway_id": "nitrogen_fixation",
+    "pathway_name": "Nitrogen fixation",
+    "description": "Core nitrogen fixation marker pathway",
+    "required_kos": ["K02586", "K02588", "K02591"],
+    "optional_kos": ["K00531"],
+    "marker_kos": ["K02588"],
+    "notes": "Marker-heavy interpretation"
+  },
+  {
+    "pathway_id": "sulfate_reduction",
+    "pathway_name": "Dissimilatory sulfate reduction",
+    "description": "Canonical sulfate reduction pathway",
+    "required_kos": ["K00394", "K00395", "K11180"],
+    "optional_kos": [],
+    "marker_kos": ["K11180"],
+    "notes": ""
+  }
+]
+

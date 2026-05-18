@@ -1,0 +1,9 @@
+name: metabolic-pipeline
+channels:
+  - conda-forge
+  - bioconda
+dependencies:
+  - python=3.11
+  - pandas
+  - pyyaml
+  - prodigal

@@ -1,0 +1,2 @@
+"""Metagenomic metabolic profiling pipeline."""
+
