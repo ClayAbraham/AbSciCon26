@@ -1,0 +1,28 @@
+workbook_path: input/metabolic_profiles.xlsx
+output_dir: output
+
+metadata_sheet: metadata
+sample_id_column: sample_id
+group_column: site_group
+
+analysis:
+  top_n_bar: 15
+  top_n_heatmap: 25
+  min_prevalence_fraction: 0.0
+  correlation_method: pearson
+  pca_components: 2
+
+sheets:
+  - dataset_name: pathway_abundance
+    sheet_name: pathway_abundance
+    dataset_type: abundance
+    feature_column: pathway_name
+    sample_column: sample_id
+    value_column: abundance
+
+  - dataset_name: pathway_completeness
+    sheet_name: pathway_completeness
+    dataset_type: completeness
+    feature_column: pathway_name
+    sample_column: sample_id
+    value_column: completeness_pct

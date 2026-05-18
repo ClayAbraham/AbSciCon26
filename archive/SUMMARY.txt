@@ -1,0 +1,73 @@
+Metagenomic Metabolic Profiling - Current Summary
+Date: 2026-03-11
+
+This repository now contains a contig-first metabolic profiling pipeline.
+
+Current workflow
+1. Accept contig FASTA input files (`.fasta`, `.fa`, or `.fna`).
+2. Run Prodigal per sample to predict proteins.
+3. Parse Prodigal amino acid FASTA plus GFF output to recover protein and contig metadata.
+4. Run KOfamScan on the predicted proteins, or read precomputed KOfam outputs from `OUTPUT_DIR/kofam/<sample_id>.kofam.tsv`.
+5. Optionally parse precomputed eggNOG annotation files.
+6. Merge annotations.
+7. Normalize KO assignments.
+8. Summarize KO counts by sample.
+9. Load pathway definitions and score pathway completeness by sample.
+10. Write reports plus run metadata.
+
+What is implemented
+- CLI entry point via `main.py` and `metabolic_pipeline/cli.py`
+- YAML config loading and validation in `metabolic_pipeline/config.py`
+- Contig discovery and workflow orchestration in `metabolic_pipeline/runner.py`
+- Protein FASTA parsing in `metabolic_pipeline/parsers/fasta_parser.py`
+- Prodigal GFF parsing in `metabolic_pipeline/parsers/prodigal_parser.py`
+- KOfam parsing in `metabolic_pipeline/parsers/kofam_parser.py`
+- Optional eggNOG parsing in `metabolic_pipeline/parsers/eggnog_parser.py`
+- Annotation merging in `metabolic_pipeline/merge_annotations.py`
+- KO normalization and KO summary in `metabolic_pipeline/ko_normalizer.py`
+- Pathway definition loading and scoring in `metabolic_pipeline/pathway/`
+- Report writing in `metabolic_pipeline/reports.py`
+- External tool wrappers for:
+  - Prodigal
+  - KOfamScan
+- Conda environment enforcement via `.conda-env` and `metabolic_pipeline/utils/environment.py`
+- Launcher scripts:
+  - `run_pipeline.ps1`
+  - `run_pipeline.sh`
+
+Current required software
+- Conda
+- Python 3.11
+- pandas
+- PyYAML
+- Prodigal
+- KOfamScan plus its `profiles` directory and `ko_list` file, if `run_kofam` is enabled
+
+Configured conda environment
+- Expected environment name: `metabolic-pipeline`
+- Environment spec file: `environment.yml`
+
+Expected outputs
+- `prodigal/<sample_id>.faa`
+- `prodigal/<sample_id>.gff`
+- `kofam/<sample_id>.kofam.tsv`
+- `annotations_merged.tsv`
+- `ko_summary.tsv`
+- `pathway_summary.tsv`
+- `pathway_long.tsv`
+- `run.log`
+- `config_snapshot.yaml`
+- `versions.txt`
+
+Repository assets currently present
+- Example KOfam output: `metabolic_pipeline/data/example_sample.kofam.tsv`
+- Example pathway definitions: `metabolic_pipeline/data/example_pathways.json`
+- Example config template: `metabolic_pipeline/data/example_config.yaml`
+- Cluster config template: `config.cluster.example.yaml`
+- SLURM submission script: `submit_metabolic_pipeline.sbatch`
+
+Important notes
+- The pipeline no longer treats protein FASTA files as the primary input.
+- Input is now expected to be contig FASTA, and protein prediction is done internally with Prodigal.
+- The environment check will stop execution if the active conda environment does not match `.conda-env`.
+- I could not run a Python verification pass in this shell because `python` is not available on the current PATH.

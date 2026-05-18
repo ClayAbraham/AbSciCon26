@@ -1,0 +1,126 @@
+cold shock
+cold-shock
+cold shock protein
+cspA
+cspB
+cspC
+cspD
+cspE
+cspG
+fatty acid desaturase
+desaturase
+omega-3 desaturase
+omega-6 desaturase
+acyl-lipid desaturase
+fabA
+fabB
+fabD
+fabF
+fabG
+fabH
+unsaturated fatty acid
+branched-chain fatty acid
+membrane fluidity
+trehalose
+trehalose synthase
+trehalose-6-phosphate synthase
+trehalose phosphatase
+otsA
+otsB
+treY
+treZ
+treS
+ectoine
+ectA
+ectB
+ectC
+ectD
+hydroxyectoine
+glycine betaine
+betaine
+betA
+betB
+betT
+opuA
+opuD
+osmoprotectant
+compatible solute
+proline biosynthesis
+proP
+proU
+chaperone
+heat shock protein
+dnaK
+dnaJ
+grpE
+groEL
+groES
+clpB
+hsp
+trigger factor
+tig
+catalase
+katG
+katE
+superoxide dismutase
+sodA
+sodB
+sodC
+peroxidase
+glutathione peroxidase
+thioredoxin
+glutaredoxin
+ahpC
+oxidative stress
+recA
+uvrA
+uvrB
+uvrC
+mutS
+mutL
+DNA repair
+recombination repair
+nucleotide excision repair
+antifreeze
+ice-binding
+ice binding
+ice nucleation
+AFP
+IBP
+exopolysaccharide
+EPS
+capsular polysaccharide
+biofilm
+alginate
+pel
+psl
+cellulose synthase
+ABC transporter
+osmoprotectant transporter
+glycine betaine transporter
+compatible solute transporter
+polyhydroxyalkanoate
+PHA
+glycogen
+carbon storage
+methane metabolism
+methanogenesis
+sulfur metabolism
+sulfate reduction
+hydrogenase
+hydrogen metabolism
+acetogenesis
+Wood-Ljungdahl
+cytochrome
+ferredoxin
+nitrate reductase
+nitrite reductase
+phosphate transport
+iron transport
+siderophore
+nitrogen assimilation
+stress response
+universal stress protein
+uspA
+sigma factor
+rpoS

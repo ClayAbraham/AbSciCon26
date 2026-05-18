@@ -1,0 +1,213 @@
+
+
+20260316 
+
+#Metabolic Mapping of Arctic Sample Data for the analysis of relevant biosignatures 
+
+
+#Step Wise Workflow 
+
+#Take the contigs.fasta file 
+#Annotate with Prodigal 
+#Align to protein database with Diamond 
+#Take alignments and reference KEGG 
+#Generate Map of metabolic functions from the dataset 
+
+
+
+#Prodigal Annotation 
+
+
+#Re-install Prodigal 
+
+cd /GeneTools/Metagenomics/
+
+sudo wget https://github.com/hyattpd/Prodigal/archive/refs/tags/v2.6.3.tar.gz
+
+sudo tar -xvzf v2.6.3.tar.gz
+
+cd Prodigal-2.6.3
+
+sudo make 
+
+
+#Tested Prodigal on 1A dataset 
+# Run time will exceed 1 hour 
+
+cd /path/to/project/1A_metab_test 
+
+/GeneTools/Metagenomics/Prodigal-2.6.3/prodigal -i 1A_contigs.fasta -a 1A_proteins.faa -d 1A_genes.fna -o 1A_prodigal_output.gff -f gff -p meta
+
+# .faa will produce an amino-acid protein-coding genes in fasta format 
+# .fna will be the DNA sequences for each protein in the .faa file 
+# .gff will be the gene positions of each contig 
+
+
+#eggNOG Mapper may be the best metabolic annotation tool as it works well with metagenomic datasets and novel enzyme detection 
+
+#To get into the Conda Environment run the following command 
+
+eval "$(/GeneTools/anaconda3/bin/conda shell.bash hook)"
+
+#Create Conda Environment
+
+conda create -n eggnog_env -c conda-forge -c bioconda eggnog-mapper
+
+#The following activates the eggnog_env once in the conda base env 
+
+conda activate eggnog_env
+
+#Now you have to download the database for eggnog 
+
+# I had to change course for two primary reasons
+# 1) eggNOG Mapper is currently >5 years old (so it is not very recent) and the current database has to be manually for working 
+# 2) An issue is the entire database for the analysis is between 200-250 GB. I do not have this kind of space currently in the drive I am in on the cluster. 
+# I decided to go back to using KoFamScan for the analysis 
+
+#To get into the Conda Environment run the following command 
+
+eval "$(/GeneTools/anaconda3/bin/conda shell.bash hook)"
+
+#Run the following to create the conda env for KoFamScan and download hmmer and parallel (ruby was already installed) 
+
+conda create -n kofam_env -c conda-forge -c bioconda hmmer parallel -y
+
+#Activate conda env 
+
+conda activate kofam_env 
+
+# Download with wget the profile and ko_list databases 
+
+# Run the exec_annotation 
+
+/GeneTools/Metagenomics/kofam_scan/exec_annotation -o 1A_proteins_kofam.tsv -p /GeneTools/Metagenomics/kofam_scan/profiles -k /GeneTools/Metagenomics/kofam_scan/ko_list --cpu 16 --format mapper 1A_proteins.faa
+
+#Run this to generate the uniques file  
+cut -f2 proteins_kofam.tsv | grep -v "^$" > ko_list_extracted.txt
+
+#Run this to get a abundance of counts 
+ awk -F'\t' '{for(i=1;i<=NF;i++) if($i ~ /^K[0-9][0-9][0-9][0-9][0-9]$/) print $i}' 5A_proteins_kofam.tsv | sort | uniq -c | sort -nr > 5A_ko_counts.txt
+
+#Run this command to get a txt file that will have a map and ko data 
+awk 'NR==FNR{a[$2]=$1; next} {gsub("ko:","",$1); gsub("path:","",$2); if($1 in a) path[$2]+=a[$1]} END {for (p in path) print path[p] "\t" p}' ko_counts.txt /your/real/path/ko2pathway.tsv | sort -nr | tee 5A_pathway_abundance.txt
+
+#Output with head should look something like this 
+44705 map01100 
+44705 ko01100 
+21384 map01110 
+21384 ko01110 
+13119 map01120
+
+#Deduplicate the previous txt file with the following, will generate a txt file with only the map data 
+awk '{p=$2; sub(/^ko/,"map",p); path[p]+=$1} END {for (k in path) print path[k] "\t" k}' pathway_abundance.txt | sort -nr > pathway_abundance_dedup.txt
+
+#This provides a number of KO assignments mapped to a particular pathway 
+join -1 2 -2 1 <(sort -k2,2 5A_pathway_abundance_dedup.txt) <(awk '{gsub("path:","",$1); print $1 "\t" substr($0, index($0,$2))}' /path/to/project/ko_pathways/pathway_names.tsv | sort -k1,1) > 5A_annotated_pathways.txt
+
+#Example 
+map00010 6664 Glycolysis / Gluconeogenesis
+map00020 1768 Citrate cycle (TCA cycle)
+map00030 3454 Pentose phosphate pathway
+map00040 614 Pentose and glucuronate interconversions
+map00051 2372 Fructose and mannose metabolism
+map00052 878 Galactose metabolism
+
+#Thus far we have created an output determining the abundance of genes related to the pathways detected. example 6,664 Glycolysis per sample site. 
+#One additional part of this analysis is to create an interesting abundance graph comparing pathways per sample site and across the data set. 
+
+#To determine pathway completeness we will take the ko_counts and generate a uniques file.
+#Testing will be on sample 5A 
+awk '{print $2}' 5A_ko_counts.txt | sort | uniq > 5A_ko_present.txt
+
+
+sort -k1,1 /path/to/project/ko_pathways/ko2pathway.tsv > ko2pathway.sorted.tsv
+
+awk -F'\t' '{sub(/^ko:/,"",$1); sub(/^path:/,"",$2); print $1"\t"$2}' /path/to/project/ko_pathways/ko2pathway.tsv > ko2pathway.clean.tsv
+
+sort -k1,1 5A_ko_present.txt > 5A_ko_present.sorted.txt
+sort -k1,1 ko2pathway.clean.tsv > ko2pathway.clean.sorted.tsv
+
+join -t $'\t' -1 1 -2 1 5A_ko_present.sorted.txt ko2pathway.clean.sorted.tsv > 5A_ko_to_pathway.tsv
+
+cut -f2 5A_ko_to_pathway.tsv | sort | uniq -c | awk '{print $2"\t"$1}' > 5A_pathway_observed_kos.tsv
+
+curl https://rest.kegg.jp/list/pathway > pathway_names.tsv
+
+##
+cut -f2 ko2pathway.clean.tsv | sort | uniq -c | awk '{print $2"\t"$1}' > pathway_total_kos.tsv
+
+sort -k1,1 5A_pathway_observed_kos.tsv > 5A_pathway_observed_kos.sorted.tsv
+sort -k1,1 pathway_total_kos.tsv > pathway_total_kos.sorted.tsv
+
+join -t $'\t' -1 1 -2 1 5A_pathway_observed_kos.sorted.tsv pathway_total_kos.sorted.tsv > 5A_pathway_completeness_raw.tsv
+
+awk -F'\t' '{printf "%s\t%s\t%s\t%.2f\n",$1,$2,$3,($2/$3)*100}' 5A_pathway_completeness_raw.tsv > 5A_pathway_completeness.tsv
+
+
+##
+awk -F'\t' '{sub(/^path:map/,"ko",$1); print $1"\t"$2}' pathway_names.tsv > pathway_names.ko.tsv
+
+sort -k1,1 5A_pathway_completeness.tsv > 5A_pathway_completeness.sorted.tsv
+sort -k1,1 pathway_names.ko.tsv > pathway_names.ko.sorted.tsv
+
+join -t $'\t' -1 1 -2 1 5A_pathway_completeness.sorted.tsv pathway_names.ko.sorted.tsv > 5A_pathway_completeness_annotated.tsv
+
+awk -F'\t' '{printf "%s\t%s\t%s\t%.2f\n",$1,$2,$3,($2/$3)*100}' 5A_pathway_completeness_raw.tsv > 5A_pathway_completeness.tsv
+
+
+
+##5A_pathway_completeness.tsv will hold the percentage of KOs found within the dataset 
+
+##
+sort -t $'\t' -k4,4nr 5A_pathway_completeness_annotated.tsv > 5A_pathway_completeness_ranked.tsv
+head -25 5A_pathway_completeness_ranked.tsv
+awk -F'\t' '$4 >= 20' 5A_pathway_completeness_annotated.tsv > 5A_pathway_completeness_20plus.tsv
+
+
+
+5A_ko_counts.txt
+5A_ko_present.txt
+5A_annotated_pathways.txt
+5A_pathway_completeness_annotated.tsv
+5A_pathway_completed.tsv 
+
+
+##The following is the same commands from above but in a condensed version to run faster 
+awk -F'\t' '{for(i=1;i<=NF;i++) if($i ~ /^K[0-9][0-9][0-9][0-9][0-9]$/) print $i}' 14A_proteins_kofam.tsv | sort | uniq -c | sort -nr > 14A_ko_counts.txt ; awk 'NR==FNR{a[$2]=$1; next} {gsub("ko:","",$1); gsub("path:","",$2); if($1 in a) path[$2]+=a[$1]} END {for (p in path) print path[p] "\t" p}' 14A_ko_counts.txt /path/to/project/ko_pathways/ko2pathway.tsv | sort -nr | tee 14A_pathway_abundance.txt
+
+
+awk '{p=$2; sub(/^ko/,"map",p); path[p]+=$1} END {for (k in path) print path[k] "\t" k}' 14A_pathway_abundance.txt | sort -nr > 14A_pathway_abundance_dedup.txt ; join -1 2 -2 1 <(sort -k2,2 14A_pathway_abundance_dedup.txt) <(awk '{gsub("path:","",$1); print $1 "\t" substr($0, index($0,$2))}' /path/to/project/ko_pathways/pathway_names.tsv | sort -k1,1) > 14A_annotated_pathways.txt
+
+
+
+awk '{print $2}' 14A_ko_counts.txt | sort | uniq > 14A_ko_present.txt ; sort -k1,1 /path/to/project/ko_pathways/ko2pathway.tsv > ko2pathway.sorted.tsv ; awk -F'\t' '{sub(/^ko:/,"",$1); sub(/^path:/,"",$2); print $1"\t"$2}' /path/to/project/ko_pathways/ko2pathway.tsv > ko2pathway.clean.tsv
+
+sort -k1,1 14A_ko_present.txt > 14A_ko_present.sorted.txt ; sort -k1,1 ko2pathway.clean.tsv > ko2pathway.clean.sorted.tsv ; join -t $'\t' -1 1 -2 1 14A_ko_present.sorted.txt ko2pathway.clean.sorted.tsv > 14A_ko_to_pathway.tsv
+
+
+awk '{print $2}' 14A_ko_counts.txt | sort | uniq > 14A_ko_present.txt ; sort -k1,1 /path/to/project/ko_pathways/ko2pathway.tsv > ko2pathway.sorted.tsv ; awk -F'\t' '{sub(/^ko:/,"",$1); sub(/^path:/,"",$2); print $1"\t"$2}' /path/to/project/ko_pathways/ko2pathway.tsv > ko2pathway.clean.tsv
+
+
+sort -k1,1 14A_ko_present.txt > 14A_ko_present.sorted.txt ; sort -k1,1 ko2pathway.clean.tsv > ko2pathway.clean.sorted.tsv ; join -t $'\t' -1 1 -2 1 14A_ko_present.sorted.txt ko2pathway.clean.sorted.tsv > 14A_ko_to_pathway.tsv
+
+cut -f2 14A_ko_to_pathway.tsv | sort | uniq -c | awk '{print $2"\t"$1}' > 14A_pathway_observed_kos.tsv ; curl https://rest.kegg.jp/list/pathway > pathway_names.tsv ; cut -f2 ko2pathway.clean.tsv | sort | uniq -c | awk '{print $2"\t"$1}' > pathway_total_kos.tsv ; sort -k1,1 14A_pathway_observed_kos.tsv > 14A_pathway_observed_kos.sorted.tsv ; sort -k1,1 pathway_total_kos.tsv > pathway_total_kos.sorted.tsv
+
+join -t $'\t' -1 1 -2 1 14A_pathway_observed_kos.sorted.tsv pathway_total_kos.sorted.tsv > 14A_pathway_completeness_raw.tsv ; awk -F'\t' '{printf "%s\t%s\t%s\t%.2f\n",$1,$2,$3,($2/$3)*100}' 14A_pathway_completeness_raw.tsv > 14A_pathway_completeness.tsv ; awk -F'\t' '{sub(/^path:map/,"ko",$1); print $1"\t"$2}' pathway_names.tsv > pathway_names.ko.tsv ; sort -k1,1 14A_pathway_completeness.tsv > 14A_pathway_completeness.sorted.tsv ; sort -k1,1 pathway_names.ko.tsv > pathway_names.ko.sorted.tsv
+
+join -t $'\t' -1 1 -2 1 14A_pathway_completeness.sorted.tsv pathway_names.ko.sorted.tsv > 14A_pathway_completeness_annotated.tsv ; awk -F'\t' '{printf "%s\t%s\t%s\t%.2f\n",$1,$2,$3,($2/$3)*100}' 14A_pathway_completeness_raw.tsv > 14A_pathway_completeness.tsv
+
+####Table of Results below
+#File				#Role		#Use
+
+ko_counts			Quantitative	Abundance / weighting
+
+ko_present			Binary		Correct pathway mapping input
+
+annotated_pathways		Reference	Labeling only
+
+pathway_completed		Analytical	Core metabolic result
+
+pathway_completeness_annotated	Final		Reporting / interpretation
+
+
+

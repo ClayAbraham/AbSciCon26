@@ -1,0 +1,72 @@
+antifreeze
+ice-binding
+ice binding
+ice nucleation
+AFP
+IBP
+exopolysaccharide
+EPS
+capsular polysaccharide
+biofilm
+alginate
+pel
+psl
+cellulose synthase
+proline biosynthesis
+proP
+proU
+glycine betaine
+betaine
+betA
+betB
+betT
+opuA
+opuD
+osmoprotectant
+compatible solute
+glycine betaine transporter
+compatible solute transporter
+ectoine
+ectA
+ectB
+ectC
+ectD
+hydroxyectoine
+trehalose
+trehalose synthase
+trehalose-6-phosphate synthase
+trehalose phosphatase
+otsA
+otsB
+treY
+treZ
+treS
+cold shock
+cold-shock
+cold shock protein
+cspA
+cspB
+cspC
+cspD
+cspE
+cspG
+polyhydroxyalkanoate
+PHA
+glycogen
+carbon storage
+fatty acid desaturase
+desaturase
+omega-3 desaturase
+omega-6 desaturase
+acyl-lipid desaturase
+fabA
+fabB
+fabD
+fabF
+fabG
+fabH
+unsaturated fatty acid
+branched-chain fatty acid
+membrane fluidity
+fatty acid metabolism
+fatty acid biosynthesis

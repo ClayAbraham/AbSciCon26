@@ -1,0 +1,35 @@
+workbook_path: 1A_compiled_pathway_data.xlsx
+output_dir: output/1A
+
+analysis:
+  top_n_bar: 20
+  top_n_heatmap: 25
+  min_prevalence_fraction: 0.0
+  correlation_method: pearson
+  pca_components: 2
+
+sheets:
+  - dataset_name: annotated_pathways
+    sheet_name: Annotated_Pathways
+    dataset_type: abundance
+    feature_column: Pathway ID
+    combine_feature_columns: true
+    include_columns:
+      - KO_Count
+    sample_id: 1A
+
+  - dataset_name: pathway_completeness
+    sheet_name: pathway_completeness_annotation
+    dataset_type: completeness
+    feature_column: Pathway_Name
+    include_columns:
+      - Completeness (%)
+    sample_id: 1A
+
+  - dataset_name: ko_counts
+    sheet_name: ko_counts
+    dataset_type: ko_abundance
+    feature_column: KO_IDs
+    include_columns:
+      - Counts
+    sample_id: 1A

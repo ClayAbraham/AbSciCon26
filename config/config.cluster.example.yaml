@@ -1,0 +1,14 @@
+input_path: /path/to/contigs_dir_or_file
+output_dir: /path/to/results
+threads: 8
+required_conda_env: metabolic-pipeline
+prodigal_executable: prodigal
+prodigal_mode: meta
+run_kofam: true
+kofamscan_executable: /path/to/kofam/exec_annotation
+kofam_profiles_dir: /path/to/kofam/profiles
+kofam_ko_list: /path/to/kofam/ko_list
+parse_eggnog: false
+eggnog_annotation_paths: []
+pathway_definition_file: /path/to/pathways.json
+overwrite: true

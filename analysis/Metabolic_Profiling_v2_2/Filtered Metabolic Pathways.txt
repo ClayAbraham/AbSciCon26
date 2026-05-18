@@ -1,0 +1,36 @@
+Bisphenol degradation
+Purine metabolism
+Glycolysis / Gluconeogenesis
+Nucleotide metabolism
+Methane metabolism
+Cysteine and methionine metabolism
+Porphyrin metabolism
+Pyruvate metabolism
+Carbon fixation by Calvin cycle
+Pyrimidine metabolism
+Butanoate metabolism
+Sulfur metabolism
+Other carbon fixation pathways
+Propanoate metabolism
+Styrene degradation
+Nitrogen metabolism
+Nitrotoluene degradation
+Xylene degradation
+Toluene degradation
+Fatty acid metabolism
+Benzoate degradation 
+Oxidative phosphorylation
+Pentose phosphate pathway
+Citrate cycle (TCA cycle)
+C5-Branched dibasic acid metabolism
+Arginine and proline metabolism
+Alanine, aspartate and glutamate metabolism
+Histidine metabolism
+Phenylalanine, tyrosine and tryptophan biosynthesis
+Valine, leucine and isoleucine degradation
+Valine, leucine and isoleucine biosynthesis
+Glyoxylate and dicarboxylate metabolism
+Porphyrin metabolism
+
+
+
