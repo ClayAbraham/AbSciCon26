@@ -20,3 +20,7 @@
 - Eva Maria Ingvadottir: <https://www.unak.is/english/moya/ugla/staff/eva-maria-ingvadottir>
 - Luran Manfio: <https://www.linkedin.com/in/luran-manfio/>
 - Steven Benner: <https://ffame.org/teammember.aspx?sid=aUiUfd8Y/> 
+
+## Funding 
+
+- Funding for travel to and presentation at AbSciCon26 provided by American Philosophical Society and the Baruch Blumberg Grant in Astriobiology Award
